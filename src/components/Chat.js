@@ -11,16 +11,20 @@ function Chat() {
 	const db = getDatabase(app);
 
 	useEffect(() => {
-		const messagesRef = ref(db, 'messages');
-		onValue(messagesRef, (snapshot) => {
-			const data = snapshot.val();
-			const loadedMessages = data ? Object.values(data) : [];
-			setMessages(loadedMessages);
-		});
+		if (auth.currentUser === null || auth.currentUser === undefined) {
+		} else {
+			const messagesRef = ref(db, 'messages');
+			onValue(messagesRef, (snapshot) => {
+				const data = snapshot.val();
+				const loadedMessages = data ? Object.values(data) : [];
+				setMessages(loadedMessages);
+			});
+		}
 	}, [db]);
 
 	const sendMessage = () => {
 		const user = auth.currentUser;
+
 		if (user && newMessage.trim()) {
 			const messagesRef = ref(db, 'messages');
 			push(messagesRef, {
@@ -29,6 +33,14 @@ function Chat() {
 				timestamp: Date.now(),
 			});
 			setNewMessage('');
+		}
+	};
+
+	const loginFirst = () => {
+		if (auth.currentUser === null || auth.currentUser === undefined) {
+			alert('debes estar regsitrado');
+		} else {
+			sendMessage();
 		}
 	};
 
@@ -49,7 +61,7 @@ function Chat() {
 				className='border p-2 w-full mb-2'
 			/>
 			<button
-				onClick={sendMessage}
+				onClick={loginFirst}
 				className='bg-green-500 text-white p-2 rounded w-full'
 			>
 				Enviar
